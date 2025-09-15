@@ -1,235 +1,150 @@
 import React, { Component } from "react";
 import NewsItem from "./NewsItem";
+import Spinner from "./Spinner"; 
 
 export class News extends Component {
-  articles = [
-    {
-      source: {
-        id: null,
-        name: "NPR",
-      },
-      author: "Huo Jingnan",
-      title:
-        "People are losing jobs due to social media posts about Charlie Kirk - NPR",
-      description:
-        'Some GOP officials want to clamp down on perceived expressions of schadenfreude about Charlie Kirk\'s death. Conservative activists are publicizing social media posts that are "celebrating" his death.',
-      url: "https://www.npr.org/2025/09/13/nx-s1-5538476/charlie-kirk-jobs-target-social-media-critics-resign",
-      urlToImage:
-        "https://npr.brightspotcdn.com/dims3/default/strip/false/crop/5798x3261+0+0/resize/1400/quality/100/format/jpeg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2Fa9%2F02%2Fb4122a9a4571addec344a85f127c%2Fgettyimages-2234381833.jpg",
-      publishedAt: "2025-09-13T09:00:00Z",
-      content:
-        "Over thirty people across the country have been fired, put on leave, investigated or faced calls to resign because of social media posts criticizing Charlie Kirk or expressing schadenfreude about the… [+9291 chars]",
-    },
-    {
-      source: {
-        id: null,
-        name: "Ctinsider.com",
-      },
-      author: "Georgia Nicols, Kelly O. Benson",
-      title: "Horoscope for Saturday, 9/13/25 by Georgia Nicols - CT Insider",
-      description:
-        "Today the Moon travels through GEMINI, enlivening curiosity and encouraging quick exchanges of ideas.",
-      url: "https://www.ctinsider.com/horoscope/article/horoscope-saturday-9-13-25-georgia-nicols-21027120.php",
-      urlToImage:
-        "https://s.hdnux.com/photos/01/54/35/37/28432364/5/rawImage.jpg",
-      publishedAt: "2025-09-13T09:00:00Z",
-      content:
-        "Today the Moon travels through GEMINI, enlivening curiosity and encouraging quick exchanges of ideas.\r\nPakin Songmor/Getty Images\r\nToday the Moon travels through GEMINI, enlivening curiosity and enco… [+5730 chars]",
-    },
-    {
-      source: {
-        id: "business-insider",
-        name: "Business Insider",
-      },
-      author: "Juliana Kaplan",
-      title: "Americans are begging Canadians to come back - Business Insider",
-      description:
-        "Canadians and American border states used to go together like gravy on fried potatoes, but political tensions have halted Canadian tourism to the US.",
-      url: "https://www.businessinsider.com/americans-businesses-beg-canadian-tourists-come-back-2025-9",
-      urlToImage:
-        "https://i.insider.com/68c476edf9db348adc0b6945?width=1200&format=jpeg",
-      publishedAt: "2025-09-13T08:03:00Z",
-      content:
-        "David Rye has been hearing a lot less French on the mountain bike trails this summer.\r\nRye is the outdoor center director at the von Trapp Family Lodge and Resort (yes, of 'The Sound of Music' fame).… [+7455 chars]",
-    },
-    {
-      source: {
-        id: "cnn",
-        name: "CNN",
-      },
-      author: "Dalia Faheid",
-      title:
-        "Authorities asked for help in the manhunt for Charlie Kirk’s killer. A father’s intuition led to an arrest - CNN",
-      description:
-        "Like thousands of Americans captivated by the manhunt for the shooter who killed conservative political activist Charlie Kirk, a Utah father had seen the photos and video footage of the suspect released by authorities.",
-      url: "https://www.cnn.com/2025/09/13/us/tyler-robinson-mahunt-charlie-kirk",
-      urlToImage:
-        "https://media.cnn.com/api/v1/images/stellar/prod/20250912-tyler-robinson-mugshot-split.jpg?c=16x9&q=w_800,c_fill",
-      publishedAt: "2025-09-13T08:00:05Z",
-      content:
-        "Like thousands of Americans captivated by the manhunt for the shooter who killed conservative political activist Charlie Kirk, a Utah father had seen the photos and video footage of the suspect relea… [+6814 chars]",
-    },
-    {
-      source: {
-        id: null,
-        name: "BBC News",
-      },
-      author: "BBC Sport",
-      title: "'It may be a chess match' - Canelo v Crawford predictions - BBC",
-      description:
-        "The world of boxing gives their predictions for Saul 'Canelo' Alvarez v Terence Crawford in Las Vegas.",
-      url: "https://www.bbc.com/sport/boxing/articles/c36jgl4dpwro",
-      urlToImage:
-        "https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/7fb3/live/91996650-9023-11f0-9cf6-cbf3e73ce2b9.jpg",
-      publishedAt: "2025-09-13T07:31:30Z",
-      content:
-        "Mexico's Saul 'Canelo' Alvarez defends his undisputed super-middleweight crown against American Terence Crawford at Las Vegas' Allegiant Stadium on Saturday. \r\nBoxing fans will be treated to a dream … [+687 chars]",
-    },
-    {
-      source: {
-        id: null,
-        name: "Navy.mil",
-      },
-      author: null,
-      title: "Update on U.S. Naval Academy Security Concern - navy.mil",
-      description:
-        "The U.S. Naval Academy provided the following statement:On Thursday, September 11 at approximately 5:07 PM EST, Naval Support Activity Annapolis security and local law enforcement responded to reports",
-      url: "https://www.navy.mil/Press-Office/News-Stories/display-news/Article/4302753/update-on-us-naval-academy-security-concern/",
-      urlToImage:
-        "https://media.defense.gov/2025/Jun/25/2003743321/1460/1280/0/200730-N-WF252-0002.PNG",
-      publishedAt: "2025-09-13T07:24:01Z",
-      content:
-        "The U.S. Naval Academy provided the following statement:\r\nOn Thursday, September 11 at approximately 5:07 PM EST, Naval Support Activity Annapolis security and local law enforcement responded to repo… [+783 chars]",
-    },
-    {
-      source: {
-        id: "associated-press",
-        name: "Associated Press",
-      },
-      author: "Marc Levy",
-      title:
-        "US electric grids under pressure from energy-hungry data centers are changing strategy - AP News",
-      description:
-        "As Big Tech’s data centers continue to grow threatening to overload U.S. electricity grids, policymakers are considering bumping the energy-hungry data centers off grids during power emergencies. Texas moved first to try to protect residents in the data-cente…",
-      url: "https://apnews.com/article/big-tech-data-centers-electricity-energy-power-texas-pennsylvania-46b42f141d0301d4c59314cc90e3eab5",
-      urlToImage:
-        "https://dims.apnews.com/dims4/default/bd0c38b/2147483647/strip/true/crop/4000x2250+0+209/resize/1440x810!/quality/90/?url=https%3A%2F%2Fassets.apnews.com%2F4f%2Fa9%2F5bb92d268b7c09dcab39be76dcd6%2F01fb639c3c404f89b2ec6aa389023af7",
-      publishedAt: "2025-09-13T07:19:00Z",
-      content:
-        "HARRISBURG, Pa. (AP) With the explosive growth of Big Techs data centers threatening to overload U.S. electricity grids, policymakers are taking a hard look at a tough-love solution: bumping the ener… [+6779 chars]",
-    },
-    {
-      source: {
-        id: "associated-press",
-        name: "Associated Press",
-      },
-      author: "Makiya Seminera, Jocelyn Gecker",
-      title:
-        "Schools tried to ban phones and avoid politics. Then came Charlie Kirk’s assassination - AP News",
-      description:
-        "The assassination of Charlie Kirk at Utah Valley University sent shockwaves through classrooms worldwide. Graphic videos of the incident quickly spread online, leaving many teens traumatized. Some students watched the video in the middle of class, leading to …",
-      url: "https://apnews.com/article/charlie-kirk-shooting-video-school-cbc8cfbc8a85b5759c37054cf1dc3908",
-      urlToImage:
-        "https://dims.apnews.com/dims4/default/f8a95ba/2147483647/strip/true/crop/3500x1969+0+182/resize/1440x810!/quality/90/?url=https%3A%2F%2Fassets.apnews.com%2F1a%2F06%2Fc0498dbafcc86508d15223dbbad1%2F73977de16a4f40afa7e387cad0665d1f",
-      publishedAt: "2025-09-13T04:01:00Z",
-      content:
-        "Some students watched the video in the middle of class. Others pulled out their phones as they walked out of school and found themselves watching the videos over and over. Some teachers interrupted l… [+5050 chars]",
-    },
-    {
-      source: {
-        id: "the-washington-post",
-        name: "The Washington Post",
-      },
-      author: "Rachel Siegel, Andrew Ackerman",
-      title:
-        "Fed governor Lisa Cook called condo a second home, documents show - The Washington Post",
-      description:
-        "The documents, first reported by Reuters on Friday evening, come as Trump is pushing to fire Cook over unproven allegations of mortgage fraud.",
-      url: "https://www.washingtonpost.com/business/2025/09/12/lisa-cook-fed-mortgage-documents/",
-      urlToImage:
-        "https://www.washingtonpost.com/wp-apps/imrs.php?src=https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/HSLMXHAKDXHMKMKJ2GAGLSA6TE.jpg&w=1440",
-      publishedAt: "2025-09-13T03:11:00Z",
-      content:
-        "Federal Reserve governor Lisa Cook described an Atlanta property now under intense scrutiny from the Trump administrationas a vacation home or a second homein multiple documents in 2021, records show.",
-    },
-    {
-      source: {
-        id: null,
-        name: "NBCSports.com",
-      },
-      author: "Kurt Helin",
-      title:
-        "Report: Steve Ballmer made a second, $10 million investment into failing company that endorsed Leonard - NBC Sports",
-      description:
-        'Ballmer claimed he was "duped" by the company in 2021 when he initially invested $50 million, but by 2023 Aspiration was a mess.',
-      url: "https://www.nbcsports.com/nba/news/report-steve-ballmer-made-a-second-10-million-investment-into-failing-company-that-endorsed-leonard",
-      urlToImage:
-        "https://nbcsports.brightspotcdn.com/dims4/default/be79e4c/2147483647/strip/true/crop/1920x1080+0+0/resize/1440x810!/quality/90/?url=https%3A%2F%2Fhdliveextra-a.akamaihd.net%2FHD%2Fimage_sports%2FNBCU_Sports_Group_-_nbcsports%2F832%2F691%2Fnbc_dls_pablo_250912.jpg",
-      publishedAt: "2025-09-13T01:44:38Z",
-      content:
-        "Clippers owner Steve Ballmers defense in the Kawhi Leonard salary cap circumvention and no show endorsement scandal has been plausible deniability. Ballmer said he was duped like other investors when… [+3317 chars]",
-    },
-    {
-      source: {
-        id: "associated-press",
-        name: "Associated Press",
-      },
-      author: "Matthew Brown",
-      title: "Meth burn by FBI smokes out Montana animal shelter - AP News",
-      description:
-        "Workers at a Montana animal shelter were evacuated and sent to the hospital after smoke from two pounds of methamphetamine incinerated by FBI agents started to fill the building. City of Billings Assistant Administrator Kevin Iffland said the incinerator is p…",
-      url: "https://apnews.com/article/montana-animal-shelter-incinerator-methamphetamine-c471a1a007237b55aa6b8fea8af5673d",
-      urlToImage:
-        "https://dims.apnews.com/dims4/default/b4e5d1d/2147483647/strip/true/crop/1620x911+0+84/resize/1440x810!/quality/90/?url=https%3A%2F%2Fassets.apnews.com%2Fb7%2F34%2Fb5e3f4a14fc56e4415e0dbe70ecc%2Fee3d6e2d603344c3950fbf51ac669028",
-      publishedAt: "2025-09-13T01:01:00Z",
-      content:
-        "BILLINGS, Mont. (AP) A cloud of smoke from two pounds of methamphetamine seized by the FBI and incinerated inside a Montana animal shelter sent its workers to the hospital, city officials in Billings… [+2621 chars]",
-    },
-    {
-      source: {
-        id: "cbs-news",
-        name: "CBS News",
-      },
-      author: "Lauren  Fichten, Julia  Ingram",
-      title:
-        "AI fuels false claims after Charlie Kirk's death, CBS News analysis reveals - CBS News",
-      description:
-        "X's AI chatbot Grok, the AI-search engine Perplexity and Google's AI summaries all provided false information in the aftermath of Charlie Kirk's assassination.",
-      url: "https://www.cbsnews.com/news/ai-false-claims-charlie-kirk-death/",
-      urlToImage:
-        "https://assets2.cbsnewsstatic.com/hub/i/r/2025/09/11/84e8a568-bdd7-4712-93b6-4e830f5aab0e/thumbnail/1200x630g2/bed4e32c8a54ace55fb6cea2f771f6e8/gettyimages-2234095256.jpg",
-      publishedAt: "2025-09-13T00:15:10Z",
-      content:
-        "False claims, conspiracy theories and posts naming people with no connection to the incident spread rapidly across social media in the aftermath of conservative activist Charlie Kirk's killing on Wed… [+4629 chars]",
-    },
-  ];
   constructor() {
     super();
-    console.log("Hello I am a constructor from News component");
     this.state = {
-      articles: this.articles,
+      pagesData: {}, 
+      articles: [],
       loading: false,
+      page: 1,
+      nextPage: null,
     };
+
+ 
+    this.apiKeys = [
+      "pub_e7ff87bf69374c2cbfbcfc22bc963ee0", 
+      "pub_87249cbadfc04004b70395ef4ccf1525", 
+    ];
+    this.apiIndex = 0; 
   }
+
+  truncateText = (text, limit, byWords = false) => {
+    if (!text) return "";
+    if (byWords) {
+      let words = text.split(" ");
+      return words.length > limit
+        ? words.slice(0, limit).join(" ") + "..."
+        : text;
+    } else {
+      return text.length > limit ? text.substring(0, limit) + "..." : text;
+    }
+  };
+
+  async componentDidMount() {
+    this.fetchNews(1); 
+  }
+
+ 
+  fetchNews = async (pageNumber, pageToken = "") => {
+    // Agar cache me already data hai
+    if (this.state.pagesData[pageNumber]) {
+      this.setState({
+        page: pageNumber,
+        articles: this.state.pagesData[pageNumber],
+      });
+      return;
+    }
+
+    this.setState({ loading: true });
+
+    let success = false;
+    let parsedData = {};
+
+    // try with both API keys
+    for (let i = 0; i < this.apiKeys.length; i++) {
+      let url = `https://newsdata.io/api/1/news?apikey=${this.apiKeys[i]}&country=in&language=en${
+        pageToken ? `&page=${pageToken}` : ""
+      }`;
+
+      try {
+        let data = await fetch(url);
+        parsedData = await data.json();
+
+        if (parsedData.status === "success") {
+          this.apiIndex = i; 
+          success = true;
+          break;
+        }
+      } catch (error) {
+        console.error("API Error with key:", this.apiKeys[i], error);
+      }
+    }
+
+    this.setState((prevState) => ({
+      page: pageNumber,
+      articles: parsedData.results || [],
+      nextPage: parsedData.nextPage || null,
+      pagesData: {
+        ...prevState.pagesData,
+        [pageNumber]: parsedData.results || [],
+      },
+      loading: false,
+    }));
+
+    if (!success) {
+      alert("❌ News API is not responding. Please try again later.");
+    }
+  };
+
+  handleNextClick = () => {
+    if (this.state.nextPage) {
+      this.fetchNews(this.state.page + 1, this.state.nextPage);
+    }
+  };
+
+  handlePrevClick = () => {
+    if (this.state.page > 1) {
+      this.fetchNews(this.state.page - 1);
+    }
+  };
+
   render() {
     return (
       <div className="container my-3">
-        <h2>Newsly - Top Headlines</h2>
+        <h2 className="text-center">Newsly - India Top Headlines</h2>
+
+        {this.state.loading && <Spinner />}
+
         <div className="row">
-          {this.state.articles.map((element) => {
-            return (
-              <div className="col-md-4" key={element.url}>
+          {!this.state.loading &&
+            Array.isArray(this.state.articles) &&
+            this.state.articles.map((element) => (
+              <div className="col-md-4" key={element.link}>
                 <NewsItem
-                  title={element.title ? element.title.slice(0, 45) : ""}
-                  description={
-                    element.description ? element.description.slice(0, 88) : ""
-                  }
-                  imageUrl={element.urlToImage}
-                  newsUrl={element.url}
+                  title={element.title ? element.title : ""}
+                  description={this.truncateText(
+                    element.description,
+                    170,
+                    false
+                  )}
+                  imageUrl={element.image_url}
+                  newsUrl={element.link}
                 />
               </div>
-            );
-          })}
+            ))}
+        </div>
+
+        {/* Prev & Next Buttons */}
+        <div className="container d-flex justify-content-between my-3">
+          <button
+            disabled={this.state.page <= 1 || this.state.loading}
+            type="button"
+            className="btn btn-dark"
+            onClick={this.handlePrevClick}
+          >
+            &larr; Previous
+          </button>
+          <button
+            disabled={!this.state.nextPage || this.state.loading}
+            type="button"
+            className="btn btn-dark"
+            onClick={this.handleNextClick}
+          >
+            Next &rarr;
+          </button>
         </div>
       </div>
     );
