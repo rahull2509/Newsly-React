@@ -1,24 +1,30 @@
 import React, { Component } from "react";
 import NewsItem from "./NewsItem";
-import Spinner from "./Spinner"; 
+import Spinner from "./Spinner";
 
 export class News extends Component {
-  constructor() {
-    super();
+  static defaultProps = {
+    category: "general",
+  };
+ capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+  constructor(props) {
+    super(props);
     this.state = {
-      pagesData: {}, 
+      pagesData: {},
       articles: [],
       loading: false,
       page: 1,
       nextPage: null,
     };
 
- 
     this.apiKeys = [
-      "pub_e7ff87bf69374c2cbfbcfc22bc963ee0", 
-      "pub_87249cbadfc04004b70395ef4ccf1525", 
+      "pub_e7ff87bf69374c2cbfbcfc22bc963ee0",
+      "pub_87249cbadfc04004b70395ef4ccf1525",
     ];
-    this.apiIndex = 0; 
+    this.apiIndex = 0;
+    document.title = `Newsly - ${this.capitalizeFirstLetter(this.props.category)} `;
   }
 
   truncateText = (text, limit, byWords = false) => {
@@ -34,12 +40,10 @@ export class News extends Component {
   };
 
   async componentDidMount() {
-    this.fetchNews(1); 
+    this.fetchNews(1);
   }
 
- 
   fetchNews = async (pageNumber, pageToken = "") => {
-    // Agar cache me already data hai
     if (this.state.pagesData[pageNumber]) {
       this.setState({
         page: pageNumber,
@@ -53,9 +57,11 @@ export class News extends Component {
     let success = false;
     let parsedData = {};
 
-    // try with both API keys
     for (let i = 0; i < this.apiKeys.length; i++) {
-      let url = `https://newsdata.io/api/1/news?apikey=${this.apiKeys[i]}&country=in&language=en${
+      // ✅ FIX: if category is general → don’t add category param
+      let categoryParam = this.props.category === "general" ? "" : `&category=${this.props.category}`;
+
+      let url = `https://newsdata.io/api/1/news?apikey=${this.apiKeys[i]}&country=in&language=en${categoryParam}${
         pageToken ? `&page=${pageToken}` : ""
       }`;
 
@@ -64,7 +70,7 @@ export class News extends Component {
         parsedData = await data.json();
 
         if (parsedData.status === "success") {
-          this.apiIndex = i; 
+          this.apiIndex = i;
           success = true;
           break;
         }
@@ -104,7 +110,9 @@ export class News extends Component {
   render() {
     return (
       <div className="container my-3">
-        <h2 className="text-center">Newsly - India Top Headlines</h2>
+        <h2 className="text-center">
+          Newsly - {this.props.category === "general" ? "Top" : this.props.category.toUpperCase()} Headlines
+        </h2>
 
         {this.state.loading && <Spinner />}
 
@@ -115,19 +123,18 @@ export class News extends Component {
               <div className="col-md-4" key={element.link}>
                 <NewsItem
                   title={element.title ? element.title : ""}
-                  description={this.truncateText(
-                    element.description,
-                    170,
-                    false
-                  )}
+                  description={this.truncateText(element.description, 170, false)}
                   imageUrl={element.image_url}
                   newsUrl={element.link}
+                  author={element.creator}
+                  date={element.pubDate}
+               source_id={element.source_id || "Unknown"}
+
                 />
               </div>
             ))}
         </div>
 
-        {/* Prev & Next Buttons */}
         <div className="container d-flex justify-content-between my-3">
           <button
             disabled={this.state.page <= 1 || this.state.loading}
