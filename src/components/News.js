@@ -1,30 +1,33 @@
 import React, { Component } from "react";
 import NewsItem from "./NewsItem";
 import Spinner from "./Spinner";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 export class News extends Component {
   static defaultProps = {
     category: "general",
   };
- capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
+
+  capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
   constructor(props) {
     super(props);
     this.state = {
-      pagesData: {},
       articles: [],
       loading: false,
       page: 1,
       nextPage: null,
     };
 
-    this.apiKeys = [
-      "pub_e7ff87bf69374c2cbfbcfc22bc963ee0",
-      "pub_87249cbadfc04004b70395ef4ccf1525",
-    ];
+    // ✅ API keys from props (App.js)
+    this.apiKeys = this.props.apiKeys || [];
     this.apiIndex = 0;
-    document.title = `Newsly - ${this.capitalizeFirstLetter(this.props.category)} `;
+
+    document.title = `Newsly - ${this.capitalizeFirstLetter(
+      this.props.category
+    )}`;
   }
 
   truncateText = (text, limit, byWords = false) => {
@@ -43,67 +46,68 @@ export class News extends Component {
     this.fetchNews(1);
   }
 
-  fetchNews = async (pageNumber, pageToken = "") => {
-    if (this.state.pagesData[pageNumber]) {
-      this.setState({
-        page: pageNumber,
-        articles: this.state.pagesData[pageNumber],
-      });
-      return;
-    }
+  // 🔄 Helper to rotate API key
+  getApiKey = () => {
+    if (this.apiKeys.length === 0) return "";
+    const key = this.apiKeys[this.apiIndex];
+    this.apiIndex = (this.apiIndex + 1) % this.apiKeys.length;
+    return key;
+  };
 
+  fetchNews = async (pageNumber, pageToken = "") => {
+    this.props.setProgress(20);
     this.setState({ loading: true });
 
     let success = false;
     let parsedData = {};
 
     for (let i = 0; i < this.apiKeys.length; i++) {
-      // ✅ FIX: if category is general → don’t add category param
-      let categoryParam = this.props.category === "general" ? "" : `&category=${this.props.category}`;
+      let categoryParam =
+        this.props.category === "general"
+          ? ""
+          : `&category=${this.props.category}`;
 
-      let url = `https://newsdata.io/api/1/news?apikey=${this.apiKeys[i]}&country=in&language=en${categoryParam}${
+      let url = `https://newsdata.io/api/1/news?apikey=${this.getApiKey()}&country=in&language=en${categoryParam}${
         pageToken ? `&page=${pageToken}` : ""
       }`;
 
       try {
+        this.props.setProgress(40);
         let data = await fetch(url);
         parsedData = await data.json();
 
-        if (parsedData.status === "success") {
-          this.apiIndex = i;
+        this.props.setProgress(70);
+
+        // ✅ safe check so "undefined.length" na aaye
+        if (parsedData.status === "success" && Array.isArray(parsedData.results)) {
           success = true;
           break;
         }
       } catch (error) {
-        console.error("API Error with key:", this.apiKeys[i], error);
+        console.error("API Error with key:", this.getApiKey(), error);
       }
     }
 
     this.setState((prevState) => ({
       page: pageNumber,
-      articles: parsedData.results || [],
+      articles:
+        pageNumber === 1
+          ? parsedData.results || []
+          : [...prevState.articles, ...(parsedData.results || [])],
       nextPage: parsedData.nextPage || null,
-      pagesData: {
-        ...prevState.pagesData,
-        [pageNumber]: parsedData.results || [],
-      },
       loading: false,
     }));
+
+    this.props.setProgress(100);
 
     if (!success) {
       alert("❌ News API is not responding. Please try again later.");
     }
   };
 
-  handleNextClick = () => {
+  fetchMoreData = () => {
     if (this.state.nextPage) {
       this.fetchNews(this.state.page + 1, this.state.nextPage);
-    }
-  };
-
-  handlePrevClick = () => {
-    if (this.state.page > 1) {
-      this.fetchNews(this.state.page - 1);
     }
   };
 
@@ -111,48 +115,40 @@ export class News extends Component {
     return (
       <div className="container my-3">
         <h2 className="text-center">
-          Newsly - {this.props.category === "general" ? "Top" : this.props.category.toUpperCase()} Headlines
+          Newsly -{" "}
+          {this.props.category === "general"
+            ? "Top"
+            : this.capitalizeFirstLetter(this.props.category)}{" "}
+          Headlines
         </h2>
 
-        {this.state.loading && <Spinner />}
-
-        <div className="row">
-          {!this.state.loading &&
-            Array.isArray(this.state.articles) &&
-            this.state.articles.map((element) => (
-              <div className="col-md-4" key={element.link}>
-                <NewsItem
-                  title={element.title ? element.title : ""}
-                  description={this.truncateText(element.description, 170, false)}
-                  imageUrl={element.image_url}
-                  newsUrl={element.link}
-                  author={element.creator}
-                  date={element.pubDate}
-               source_id={element.source_id || "Unknown"}
-
-                />
-              </div>
-            ))}
-        </div>
-
-        <div className="container d-flex justify-content-between my-3">
-          <button
-            disabled={this.state.page <= 1 || this.state.loading}
-            type="button"
-            className="btn btn-dark"
-            onClick={this.handlePrevClick}
-          >
-            &larr; Previous
-          </button>
-          <button
-            disabled={!this.state.nextPage || this.state.loading}
-            type="button"
-            className="btn btn-dark"
-            onClick={this.handleNextClick}
-          >
-            Next &rarr;
-          </button>
-        </div>
+        <InfiniteScroll
+          dataLength={this.state.articles ? this.state.articles.length : 0} // ✅ safe
+          next={this.fetchMoreData}
+          hasMore={!!this.state.nextPage}
+          loader={<Spinner />}
+        >
+          <div className="row">
+            {Array.isArray(this.state.articles) &&
+              this.state.articles.map((element) => (
+                <div className="col-md-4" key={element.link}>
+                  <NewsItem
+                    title={element.title || ""}
+                    description={this.truncateText(
+                      element.description,
+                      170,
+                      false
+                    )}
+                    imageUrl={element.image_url}
+                    newsUrl={element.link}
+                    author={element.creator}
+                    date={element.pubDate}
+                    source_id={element.source_id || "Unknown"}
+                  />
+                </div>
+              ))}
+          </div>
+        </InfiniteScroll>
       </div>
     );
   }
