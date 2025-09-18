@@ -1,38 +1,137 @@
-/* .App {
-  text-align: center;
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #f8f9fa;
+  color: #212529;
+  line-height: 1.6;
+  margin-top: 70px; /* navbar ke liye space */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Navbar */
+.navbar {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.nav-link {
+  transition: all 0.3s ease-in-out;
+}
+
+.nav-link:hover {
+  color: #0d6efd !important;
+}
+
+.nav-link.active {
+  color: #0d6efd !important;
+  font-weight: bold;
+  border-bottom: 2px solid #0d6efd;
+}
+
+/* Headings */
+h2 {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 1.8rem;
+}
+
+/* News Cards */
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  margin: 10px auto; /* ✅ Always center card */
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card img {
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  height: 200px;
+  object-fit: cover;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.card-text {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* Buttons */
+.btn-dark {
+  background: #0d6efd;
+  border: none;
+  transition: background 0.3s ease-in-out;
+}
+
+.btn-dark:hover {
+  background: #0b5ed7;
+}
+
+/* Badge (Source ID) */
+.badge {
+  font-size: 0.75rem;
+  padding: 6px 10px;
+}
+
+/* Responsive Grid */
+.row {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center; /* ✅ Force center alignment */
 }
 
-.App-link {
-  color: #61dafb;
+.col-md-4 {
+  flex: 1 1 calc(33.333% - 20px);
+  max-width: calc(33.333% - 20px);
+  display: flex;
+  justify-content: center; /* ✅ Center card inside column */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+@media (max-width: 992px) {
+  .col-md-4 {
+    flex: 1 1 calc(50% - 20px);
+    max-width: calc(50% - 20px);
   }
-  to {
-    transform: rotate(360deg);
+}
+
+@media (max-width: 576px) {
+  .col-md-4 {
+    flex: 1 1 100%;
+    max-width: 100%;
+    display: flex;
+    justify-content: center; /* ✅ Fix mobile alignment */
   }
-} */
+
+  .card {
+    width: 90%; /* ✅ Not full width, looks clean */
+  }
+
+  .card img {
+    height: 180px;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+  }
+}
+.btn-dark {
+  background-color: #000 !important;
+  border-color: #000 !important;
+}

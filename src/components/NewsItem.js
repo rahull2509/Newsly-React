@@ -1,14 +1,14 @@
-import React, { Component } from "react";
+import React from "react";
 
-export class NewsItem extends Component {
-  render() {
+const NewsItem = (props) => 
+{
     let { title, description, imageUrl, newsUrl, author, date, source_id } =
-      this.props;
+      props;
 
     return (
       <div className="my-3">
         <div className="card" style={{ width: "18rem", position: "relative" }}>
-          {/* 🔴 Badge shifted to TOP-LEFT */}
+        
           <span
             className="badge rounded-pill bg-danger"
             style={{
@@ -53,6 +53,6 @@ export class NewsItem extends Component {
       </div>
     );
   }
-}
+
 
 export default NewsItem;

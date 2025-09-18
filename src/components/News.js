@@ -1,36 +1,19 @@
-import React, { Component } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import NewsItem from "./NewsItem";
 import Spinner from "./Spinner";
 import InfiniteScroll from "react-infinite-scroll-component";
 
-export class News extends Component {
-  static defaultProps = {
-    category: "general",
-  };
+const News = ({ category = "general", apiKeys = [], setProgress }) => {
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [nextPage, setNextPage] = useState(null);
+  const [lastKeyIndex, setLastKeyIndex] = useState(0); 
 
-  capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
+  const capitalizeFirstLetter = (string) =>
+    string.charAt(0).toUpperCase() + string.slice(1);
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      articles: [],
-      loading: false,
-      page: 1,
-      nextPage: null,
-    };
-
-    // ✅ API keys from props (App.js)
-    this.apiKeys = this.props.apiKeys || [];
-    this.apiIndex = 0;
-
-    document.title = `Newsly - ${this.capitalizeFirstLetter(
-      this.props.category
-    )}`;
-  }
-
-  truncateText = (text, limit, byWords = false) => {
+  const truncateText = (text, limit, byWords = false) => {
     if (!text) return "";
     if (byWords) {
       let words = text.split(" ");
@@ -42,116 +25,125 @@ export class News extends Component {
     }
   };
 
-  async componentDidMount() {
-    this.fetchNews(1);
-  }
+  //  Fetch News with fallback for all keys
+  const fetchNews = useCallback(
+    async (pageNumber, pageToken = "") => {
+      if (loading) return;
+      setProgress(20);
+      setLoading(true);
 
-  // 🔄 Helper to rotate API key
-  getApiKey = () => {
-    if (this.apiKeys.length === 0) return "";
-    const key = this.apiKeys[this.apiIndex];
-    this.apiIndex = (this.apiIndex + 1) % this.apiKeys.length;
-    return key;
-  };
+      let parsedData = {};
+      let success = false;
 
-  fetchNews = async (pageNumber, pageToken = "") => {
-    this.props.setProgress(20);
-    this.setState({ loading: true });
+      // Start from last successful key
+      for (let i = lastKeyIndex; i < apiKeys.length; i++) {
+        let categoryParam = category === "general" ? "" : `&category=${category}`;
+        let url = `https://newsdata.io/api/1/news?apikey=${apiKeys[i]}&country=in&language=en${categoryParam}${
+          pageToken ? `&page=${pageToken}` : ""
+        }`;
 
-    let success = false;
-    let parsedData = {};
+        try {
+          setProgress(40);
+          const response = await fetch(url);
+          parsedData = await response.json();
+          console.log(`API Key ${i + 1} Response:`, parsedData);
 
-    for (let i = 0; i < this.apiKeys.length; i++) {
-      let categoryParam =
-        this.props.category === "general"
-          ? ""
-          : `&category=${this.props.category}`;
+          setProgress(70);
 
-      let url = `https://newsdata.io/api/1/news?apikey=${this.getApiKey()}&country=in&language=en${categoryParam}${
-        pageToken ? `&page=${pageToken}` : ""
-      }`;
-
-      try {
-        this.props.setProgress(40);
-        let data = await fetch(url);
-        parsedData = await data.json();
-
-        this.props.setProgress(70);
-
-        // ✅ safe check so "undefined.length" na aaye
-        if (parsedData.status === "success" && Array.isArray(parsedData.results)) {
-          success = true;
-          break;
+          if (parsedData.status === "success" && Array.isArray(parsedData.results)) {
+            success = true;
+            setLastKeyIndex(i); 
+            break;
+          }
+        } catch (error) {
+          console.error(`API Error with key ${i + 1}:`, error);
         }
-      } catch (error) {
-        console.error("API Error with key:", this.getApiKey(), error);
       }
-    }
 
-    this.setState((prevState) => ({
-      page: pageNumber,
-      articles:
+      setPage(pageNumber);
+
+      setArticles((prevArticles) =>
         pageNumber === 1
-          ? parsedData.results || []
-          : [...prevState.articles, ...(parsedData.results || [])],
-      nextPage: parsedData.nextPage || null,
-      loading: false,
-    }));
+          ? Array.isArray(parsedData.results)
+            ? parsedData.results
+            : []
+          : [
+              ...prevArticles,
+              ...(Array.isArray(parsedData.results) ? parsedData.results : []),
+            ]
+      );
 
-    this.props.setProgress(100);
+      setNextPage(parsedData.nextPage || null);
+      setLoading(false);
+      setProgress(100);
 
-    if (!success) {
-      alert("❌ News API is not responding. Please try again later.");
+      if (!success) {
+        alert("All API keys exhausted or API not responding. Please try later.");
+      }
+    },
+    [apiKeys, category, setProgress, loading, lastKeyIndex]
+  );
+
+  useEffect(() => {
+    document.title = `Newsly - ${capitalizeFirstLetter(category)}`;
+    fetchNews(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category]);
+
+  const fetchMoreData = () => {
+    if (nextPage && !loading) {
+      fetchNews(page + 1, nextPage);
     }
   };
 
-  fetchMoreData = () => {
-    if (this.state.nextPage) {
-      this.fetchNews(this.state.page + 1, this.state.nextPage);
-    }
-  };
+  return (
+    <div className="container my-3">
+      <h2
+        className="text-center"
+        style={{ margin: "35px 0px", marginTop: "80px" }}
+      >
+        Newsly -{" "}
+        {category === "general"
+          ? "Top"
+          : capitalizeFirstLetter(category)}{" "}
+        Headlines
+      </h2>
 
-  render() {
-    return (
-      <div className="container my-3">
-        <h2 className="text-center">
-          Newsly -{" "}
-          {this.props.category === "general"
-            ? "Top"
-            : this.capitalizeFirstLetter(this.props.category)}{" "}
-          Headlines
-        </h2>
+      {loading && page === 1 && <Spinner />}
 
-        <InfiniteScroll
-          dataLength={this.state.articles ? this.state.articles.length : 0} // ✅ safe
-          next={this.fetchMoreData}
-          hasMore={!!this.state.nextPage}
-          loader={<Spinner />}
-        >
-          <div className="row">
-            {Array.isArray(this.state.articles) &&
-              this.state.articles.map((element) => (
-                <div className="col-md-4" key={element.link}>
-                  <NewsItem
-                    title={element.title || ""}
-                    description={this.truncateText(
-                      element.description,
-                      170,
-                      false
-                    )}
-                    imageUrl={element.image_url}
-                    newsUrl={element.link}
-                    author={element.creator}
-                    date={element.pubDate}
-                    source_id={element.source_id || "Unknown"}
-                  />
-                </div>
-              ))}
-          </div>
-        </InfiniteScroll>
-      </div>
-    );
-  }
-}
+      {!loading && articles.length === 0 && (
+        <h4 className="text-center text-muted">No articles found</h4>
+      )}
+
+      <InfiniteScroll
+        dataLength={articles.length}
+        next={fetchMoreData}
+        hasMore={!!nextPage}
+        loader={<Spinner />}
+      >
+        <div className="row">
+          {Array.isArray(articles) &&
+            articles.map((element, index) => (
+              <div className="col-md-4" key={element.link || index}>
+                <NewsItem
+                  title={element.title || ""}
+                  description={truncateText(element.description, 170, false)}
+                  imageUrl={element.image_url}
+                  newsUrl={element.link}
+                  author={
+                    Array.isArray(element.creator)
+                      ? element.creator[0]
+                      : element.creator || "Unknown"
+                  }
+                  date={element.pubDate}
+                  source_id={element.source_id || "Unknown"}
+                />
+              </div>
+            ))}
+        </div>
+      </InfiniteScroll>
+    </div>
+  );
+};
 
 export default News;
