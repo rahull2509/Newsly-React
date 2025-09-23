@@ -41,15 +41,21 @@ Newsly-React/
 │   └── ...
 ├── src/
 │   ├── components/
+│   │   ├── loading.gif
 │   │   ├── Navbar.js
-│   │   ├── NewsList.js
-│   │   └── NewsItem.js
-│   ├── services/
-│   │   └── api.js
+│   │   ├── News.js
+│   │   ├── NewsItem.js
+│   │   └── Spinner.js
+│   ├── App.css
 │   ├── App.js
+│   ├── App.test.js
+│   ├── index.css
 │   ├── index.js
-│   └── App.css
+│   ├── logo.svg
+│   ├── reportWebVitals.js
+│   └── setupTests.js
 ├── .gitignore
 ├── LICENSE
-├── README.md
-└── package.json
+├── package-lock.json
+├── package.json
+
