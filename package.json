@@ -16,7 +16,6 @@
     "react-router-dom": "^7.9.1",
     "react-scripts": "5.0.1",
     "react-top-loading-bar": "^3.0.2",
-    "typescript": "^5.9.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -44,6 +43,7 @@
     ]
   },
   "devDependencies": {
-    "@types/react-infinite-scroll-component": "^4.2.5"
+    "@types/react-infinite-scroll-component": "^4.2.5",
+    "typescript": "^4.9.5"
   }
 }
