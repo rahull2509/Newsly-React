@@ -1,11 +1,10 @@
 import React from "react";
+import loading from "./loading.gif"; 
 
 const Spinner: React.FC = () => {
   return (
     <div className="text-center my-3">
-      <div className="spinner-border" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </div>
+      <img src={loading} alt="loading" style={{ width: "50px" }} />
     </div>
   );
 };
